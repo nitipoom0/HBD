@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday 🎂</title>
+  <meta name="description" content="A lovely birthday page you can host on GitHub Pages." />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* จะปรับธีมหลักได้จาก JS (themeColor) */
+      --brand:#FF5DA2;
+      --brand-2:#FFD166;
+      --bg:#0f0f23;          /* dark gradient base */
+      --bg-2:#1a1a2e;
+      --ink:#f7f7fb;
+      --muted:#c6c8d1;
+      --card:#15152b;
+      --glass:rgba(255,255,255,.08);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--ink); font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif; 
+      background: radial-gradient(1200px 800px at 20% -20%, #2a2650 0%, transparent 50%),
+                  radial-gradient(1200px 800px at 120% 120%, #2a2650 0%, transparent 50%),
+                  linear-gradient(135deg,var(--bg),var(--bg-2));
+      overflow-x:hidden;
+    }
+
+    /* Floating balloons background */
+    .balloons{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden}
+    .balloon{position:absolute; bottom:-120px; width:48px; height:60px; border-radius:50% 50% 45% 55% / 55% 55% 45% 45%;
+      box-shadow:inset -6px -10px 18px rgba(0,0,0,.22); opacity:.85}
+    .balloon::after{content:""; position:absolute; bottom:-18px; left:50%; width:2px; height:22px; background:rgba(255,255,255,.5)}
+    @keyframes floatUp{from{transform:translateY(0)} to{transform:translateY(-120vh)}}
+
+    header{
+      position:relative; z-index:2; text-align:center; padding:48px 16px 12px;
+    }
+    .headline{font-family:"Great Vibes",cursive; font-size: clamp(44px, 7vw, 86px); line-height:1.05; margin:0 0 4px; color:var(--brand)}
+    .sub{font-weight:600; letter-spacing:.3px; color:var(--muted)}
+
+    main{position:relative; z-index:2; max-width:1100px; margin:20px auto 80px; padding:0 16px;}
+    .grid{display:grid; grid-template-columns:1fr; gap:20px}
+    @media(min-width:880px){ .grid{grid-template-columns: 1.1fr .9fr} }
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05)); border:1px solid rgba(255,255,255,.1); box-shadow:var(--shadow); border-radius:var(--radius); padding:22px}
+
+    /* Countdown card */
+    .countdown{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap}
+    .date-badge{background:var(--glass); border:1px dashed rgba(255,255,255,.25); border-radius:14px; padding:10px 14px; font-weight:600}
+    .timer{display:flex; gap:12px; align-items:stretch}
+    .tick{min-width:74px; text-align:center; background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:10px 8px}
+    .tick strong{display:block; font-size:26px}
+    .tick span{display:block; font-size:12px; color:var(--muted)}
+    .cta-row{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{appearance:none; border:none; cursor:pointer; padding:12px 16px; border-radius:14px; font-weight:700; letter-spacing:.2px; transition:transform .12s ease, opacity .2s ease, box-shadow .2s ease}
+    .btn.primary{background:var(--brand); color:#101018; box-shadow:0 6px 18px rgba(255,93,162,.35)}
+    .btn.ghost{background:rgba(255,255,255,.07); color:var(--ink); border:1px solid rgba(255,255,255,.14)}
+    .btn:hover{transform:translateY(-1px)}
+
+    /* Gift */
+    .gift{position:relative; height:260px; display:grid; place-items:center;}
+    .box{position:relative; width:180px; height:120px; background:linear-gradient(180deg,#2b2b55,#1f1f3f); border-radius:10px; box-shadow:var(--shadow); transform-style:preserve-3d}
+    .ribbon{position:absolute; inset:0; background:linear-gradient(90deg,transparent 49%, var(--brand) 50%, var(--brand) 51%, transparent 52%),
+                              linear-gradient(0deg,transparent 49%, var(--brand) 50%, var(--brand) 51%, transparent 52%)}
+    .lid{position:absolute; width:200px; height:44px; background:linear-gradient(180deg,#3a386d,#2b2a58); top:-40px; left:-10px; border-radius:10px; transform-origin: 10% 100%; transition: transform .6s cubic-bezier(.22,1,.36,1)}
+    .knot{position:absolute; width:64px; height:28px; top:-26px; left:58px; background:var(--brand); border-radius:16px 16px 2px 2px; box-shadow:inset 0 -6px 0 rgba(0,0,0,.15)}
+    .spark{position:absolute; inset: -40px; pointer-events:none; opacity:0; transition:opacity .35s ease}
+    .gift.open .lid{transform: rotateX( -55deg ) translateY(-6px)}
+    .gift.open .spark{opacity:1}
+
+    .message{margin-top:18px; font-size:18px; color:var(--muted)}
+    .typed{font-size:22px; font-weight:600; color:var(--ink)}
+
+    /* Gallery */
+    .gallery{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+    @media(min-width:680px){ .gallery{grid-template-columns:repeat(3,1fr)} }
+    .gallery img{width:100%; height:180px; object-fit:cover; border-radius:12px; box-shadow:var(--shadow); cursor:pointer; border:1px solid rgba(255,255,255,.14); transition:transform .15s ease}
+    .gallery img:hover{transform:translateY(-2px)}
+    .modal{position:fixed; inset:0; background:rgba(0,0,0,.7); display:none; place-items:center; z-index:50}
+    .modal.open{display:grid}
+    .modal img{max-width:92vw; max-height:80vh; border-radius:16px; box-shadow:var(--shadow)}
+
+    /* Music */
+    .music{display:flex; align-items:center; gap:12px}
+    .music small{color:var(--muted)}
+
+    footer{opacity:.7; text-align:center; padding:24px; font-size:12px}
+
+    /* Confetti canvas */
+    #confetti-canvas{position:fixed; inset:0; z-index:40; pointer-events:none}
+  </style>
+</head>
+<body>
+  <div class="balloons" id="balloons" aria-hidden="true"></div>
+  <canvas id="confetti-canvas"></canvas>
+
+  <header>
+    <h1 class="headline">Happy Birthday, <span id="gfName">คุณที่น่ารัก</span>! 🎉</h1>
+    <p class="sub">ขอให้วันนี้เต็มไปด้วยรอยยิ้ม ความสุข และความทรงจำดี ๆ 🌟</p>
+  </header>
+
+  <main>
+    <section class="grid">
+      <!-- Left column: Countdown & Gift -->
+      <div class="card">
+        <h2 style="margin-top:6px">นับถอยหลังสู่วันเกิด</h2>
+        <div class="countdown" style="margin:10px 0 16px">
+          <div class="date-badge">🎂 <span id="bdayText">—</span></div>
+          <div class="timer" id="timer">
+            <div class="tick"><strong id="dd">0</strong><span>วัน</span></div>
+            <div class="tick"><strong id="hh">0</strong><span>ชั่วโมง</span></div>
+            <div class="tick"><strong id="mm">0</strong><span>นาที</span></div>
+            <div class="tick"><strong id="ss">0</strong><span>วินาที</span></div>
+          </div>
+          <div class="cta-row">
+            <button class="btn primary" id="confettiBtn">โปรยคอนเฟตติ 🎊</button>
+            <button class="btn ghost" id="wishBtn">อ่านข้อความอวยพร 💌</button>
+          </div>
+        </div>
+
+        <div class="gift" id="gift">
+          <div class="box">
+            <div class="ribbon"></div>
+            <div class="lid"></div>
+            <div class="knot"></div>
+            <svg class="spark" viewBox="0 0 120 120">
+              <g fill="none" stroke="var(--brand)" stroke-width="3" stroke-linecap="round">
+                <path d="M60 10 v18"/>
+                <path d="M60 92 v18"/>
+                <path d="M10 60 h18"/>
+                <path d="M92 60 h18"/>
+                <path d="M25 25 l12 12"/>
+                <path d="M95 95 l-12 -12"/>
+                <path d="M95 25 l-12 12"/>
+                <path d="M25 95 l12 -12"/>
+              </g>
+            </svg>
+          </div>
+          <div class="message"><span class="typed" id="typed"></span></div>
+        </div>
+
+        <div class="music">
+          <button class="btn ghost" id="musicToggle">▶️ เพลงเซอร์ไพรส์</button>
+          <small id="musicHint">(อัปโหลดไฟล์ .mp3 ของคุณ แล้วตั้งค่าในส่วน CONFIG ด้านล่าง)</small>
+          <audio id="audio" preload="none"></audio>
+        </div>
+      </div>
+
+      <!-- Right column: Gallery -->
+      <div class="card">
+        <h2 style="margin-top:6px">อัลบั้มความทรงจำ</h2>
+        <p class="sub" style="margin:6px 0 12px">คลิกรูปเพื่อขยาย ✨</p>
+        <div class="gallery" id="gallery"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <img alt="preview" id="modalImg"/>
+  </div>
+
+  <footer>
+    สร้างด้วย ❤️ เพื่อเซอร์ไพรส์คนพิเศษ — โฮสต์บน GitHub Pages ได้ง่าย ๆ
+  </footer>
+
+  <script>
+    // ==========================
+    //  CONFIG (แก้ค่าได้ตรงนี้)
+    // ==========================
+    const CONFIG = {
+      name: "Pang",         // ← ชื่อแฟน
+      // กำหนดวัน/เดือนของวันเกิด (ปีจะคำนวณให้เป็นปีถัดไปโดยอัตโนมัติ)
+      birthday: { month: 9, day: 12 }, // 1-12, 1-31  (ตัวอย่าง 12 กันยา)
+      themeColor: "#FF5DA2", // ← สีหลักของธีม (เฉดชมพู)
+      // อัปโหลดเพลงของคุณไปไว้ใน repo แล้วเปลี่ยนพาธด้านล่าง เช่น "music/happy.mp3"
+      musicSrc: "",  
+      // ลิสต์รูปภาพ (ใส่ลิงก์รูป หรือพาธไฟล์ใน repo ก็ได้)
+      galleryImages: [
+        "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1604014237800-1c9102c8f767?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1542060748-10c28b62716b?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1511840636560-acee95b8c16a?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1561175778-2a65a77f79fd?q=80&w=1200&auto=format&fit=crop"
+      ],
+      wishes: [
+        "สุขสันต์วันเกิดนะคะ 💖", 
+        "ขอให้สุขภาพแข็งแรง มีแต่เรื่องดี ๆ เข้ามา",
+        "ขอบคุณที่อยู่ข้าง ๆ กันเสมอ",
+        "รักที่สุดในจักรวาล 🪐"
+      ]
+    };
+
+    // ตั้งค่าสีธีมให้ราก
+    document.documentElement.style.setProperty('--brand', CONFIG.themeColor);
+
+    // ใส่ชื่อหัวข้อ
+    document.getElementById('gfName').textContent = CONFIG.name;
+
+    // ตั้งค่าเพลง (ถ้ามี)
+    const audioEl = document.getElementById('audio');
+    if (CONFIG.musicSrc) {
+      audioEl.src = CONFIG.musicSrc;
+      document.getElementById('musicHint').style.display = 'none';
+    }
+
+    // ==========================
+    //  Balloons background
+    // ==========================
+    const balloonColors = [ CONFIG.themeColor, '#FF8FAB', '#B388FF', '#6EE7B7', '#FFD166' ];
+    const balloonsWrap = document.getElementById('balloons');
+    for (let i=0;i<14;i++){
+      const b = document.createElement('div');
+      b.className = 'balloon';
+      const color = balloonColors[i % balloonColors.length];
+      b.style.background = `radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), ${color} 60%)`;
+      b.style.left = Math.random()*100 + 'vw';
+      const s = 0.8 + Math.random()*0.9; // scale
+      b.style.transform = `scale(${s})`;
+      const dur = 18 + Math.random()*16;
+      b.style.animation = `floatUp ${dur}s linear infinite`;
+      b.style.animationDelay = (-Math.random()*dur)+ 's';
+      balloonsWrap.appendChild(b);
+    }
+
+    // ==========================
+    //  Countdown logic
+    // ==========================
+    function nextBirthdayDate(){
+      const now = new Date();
+      const y = now.getFullYear();
+      let target = new Date(y, CONFIG.birthday.month-1, CONFIG.birthday.day, 0,0,0);
+      if (target < now) target = new Date(y+1, CONFIG.birthday.month-1, CONFIG.birthday.day, 0,0,0);
+      return target;
+    }
+    const bday = nextBirthdayDate();
+    const bdayText = bday.toLocaleDateString(undefined,{ day:'2-digit', month:'long'});
+    document.getElementById('bdayText').textContent = `ถึง ${bdayText}`;
+
+    function updateCountdown(){
+      const now = new Date();
+      let diff = bday - now; // ms
+      if (diff < 0) diff = 0;
+      const s = Math.floor(diff/1000)%60;
+      const m = Math.floor(diff/1000/60)%60;
+      const h = Math.floor(diff/1000/60/60)%24;
+      const d = Math.floor(diff/1000/60/60/24);
+      dd.textContent = d; hh.textContent = h; mm.textContent = m; ss.textContent = s;
+    }
+    const dd = document.getElementById('dd');
+    const hh = document.getElementById('hh');
+    const mm = document.getElementById('mm');
+    const ss = document.getElementById('ss');
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ==========================
+    //  Typed wishes
+    // ==========================
+    const typedEl = document.getElementById('typed');
+    let wishIndex = 0, charIndex = 0, typing = true;
+    function typeLoop(){
+      const current = CONFIG.wishes[wishIndex % CONFIG.wishes.length];
+      if (typing){
+        charIndex++;
+        typedEl.textContent = current.slice(0,charIndex);
+        if (charIndex >= current.length){ typing = false; setTimeout(typeLoop, 1300); return; }
+        setTimeout(typeLoop, 38 + Math.random()*60);
+      } else {
+        charIndex--;
+        typedEl.textContent = current.slice(0,charIndex);
+        if (charIndex <= 0){ typing = true; wishIndex++; setTimeout(typeLoop, 400); return; }
+        setTimeout(typeLoop, 24 + Math.random()*40);
+      }
+    }
+    typeLoop();
+
+    // ==========================
+    //  Gift interaction
+    // ==========================
+    const gift = document.getElementById('gift');
+    gift.addEventListener('click', ()=>{
+      gift.classList.toggle('open');
+      burstConfetti(220);
+    });
+
+    // ==========================
+    //  Gallery
+    // ==========================
+    const gallery = document.getElementById('gallery');
+    CONFIG.galleryImages.forEach(src=>{
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.src = src; img.alt = 'memory photo';
+      img.addEventListener('click', ()=>openModal(src));
+      gallery.appendChild(img);
+    });
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modalImg');
+    function openModal(src){ modalImg.src = src; modal.classList.add('open'); }
+    modal.addEventListener('click', ()=>modal.classList.remove('open'));
+
+    // ==========================
+    //  Music toggle
+    // ==========================
+    document.getElementById('musicToggle').addEventListener('click', async ()=>{
+      try{
+        if (audioEl.paused){ await audioEl.play(); event.target.textContent = '⏸️ หยุดเพลง'; }
+        else { audioEl.pause(); event.target.textContent = '▶️ เพลงเซอร์ไพรส์'; }
+      }catch(e){ alert('เบราว์เซอร์บล็อกการเล่นอัตโนมัติ โปรดกดอีกครั้งหรือเปิดใช้งานเสียง'); }
+    });
+
+    // ==========================
+    //  Confetti (vanilla, lightweight)
+    // ==========================
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const ctx = confettiCanvas.getContext('2d');
+    function resize(){ confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight }
+    addEventListener('resize', resize); resize();
+
+    const confColors = [ CONFIG.themeColor, '#FFD166', '#7AD9F5', '#A7F3D0', '#FCA5A5', '#C4B5FD' ];
+
+    function burstConfetti(count=180){
+      const particles = [];
+      const originX = innerWidth/2, originY = innerHeight/6; // near top center
+      for (let i=0;i<count;i++){
+        const angle = Math.random()*Math.PI*2;
+        const speed = 4 + Math.random()*6;
+        particles.push({
+          x: originX + (Math.random()*80-40),
+          y: originY + (Math.random()*40-20),
+          vx: Math.cos(angle)*speed,
+          vy: Math.sin(angle)*speed - 2,
+          size: 4 + Math.random()*5,
+          color: confColors[i%confColors.length],
+          shape: Math.random()<.5 ? 'rect' : 'circle',
+          life: 120 + Math.random()*40
+        });
+      }
+
+      let animId;
+      (function loop(){
+        animId = requestAnimationFrame(loop);
+        ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+        particles.forEach(p=>{
+          // physics
+          p.vy += 0.08; // gravity
+          p.vx *= 0.995; p.vy *= 0.995; // air drag
+          p.x += p.vx; p.y += p.vy;
+          p.life -= 1;
+          // draw
+          ctx.save();
+          ctx.globalAlpha = Math.max(p.life/140, 0);
+          ctx.fillStyle = p.color;
+          if (p.shape==='rect'){
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.x+p.y)/100);
+            ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+          } else {
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.size/2,0,Math.PI*2); ctx.fill();
+          }
+          ctx.restore();
+        });
+        // cleanup
+        for (let i=particles.length-1;i>=0;i--){ if (particles[i].life<=0 || particles[i].y>innerHeight+40) particles.splice(i,1); }
+        if (!particles.length){ cancelAnimationFrame(animId); }
+      })();
+    }
+
+    document.getElementById('confettiBtn').addEventListener('click', ()=> burstConfetti(200));
+    document.getElementById('wishBtn').addEventListener('click', ()=>{
+      burstConfetti(120);
+      gift.classList.add('open');
+    });
+
+    // Auto confetti on first load after slight delay for dramatic effect
+    setTimeout(()=>burstConfetti(240), 900);
+
+  </script>
+</body>
+</html>
